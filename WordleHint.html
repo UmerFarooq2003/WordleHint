@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Word Guessing Game</title>
+    <style>
+       body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: #f0f0f0;
+  /* background-color: #222; */
+}
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 999;
+}
+
+.popup-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.popup-message {
+    display: block;
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.popup-close-btn {
+    display: block;
+    margin: 0 auto;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+}
+
+.popup-close-btn:hover {
+    background-color: #555;
+}
+.rules-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+        }
+
+        .rules-popup-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+        }
+
+        .rules-popup-heading {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .rules-popup-text {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .rules-popup-close-btn {
+            display: block;
+            margin: 20px auto 0;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+        }
+
+        .rules-popup-close-btn:hover {
+            background-color: #555;}
+h1 {
+  margin-top: 20px;
+  color: #333;
+}
+
+.word-boxes {
+  display: grid;
+  grid-template-columns: repeat(5, 60px);
+  grid-template-rows: repeat(5, 60px);
+  gap: 05px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.word-box {
+  width: 60px;
+  height: 60px;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 60px;
+  font-size: 24px;
+  border: 1px solid #333;
+  background-color: #fff;
+}
+
+.word-box.correct {
+  background-color: #8bc34a; /* Light green for correctly guessed letters */
+  color: #333;
+}
+
+.word-box.partial {
+  background-color: #ffeb3b; /* Yellow for partially correct letters */
+  color: #333;
+}
+
+.word-box.wrong {
+  background-color: #f44336; /* Red for incorrect letters */
+  color: #fff;
+}
+
+.keyboard {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+  /* gap: px;  */
+}
+
+.key {
+  display: inline-block;
+  width: 40px;
+   text-transform: uppercase;
+  height: 40px;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 40px;
+  margin: 5px;
+  border: 1px solid #333;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #fff;
+  color: #333;
+  font-size: 16px;
+}
+
+.key:hover {
+  background-color: #333;
+  color: #fff;
+}
+#virtualKeyboard{
+    display: flex;
+    flex-direction: column;
+}
+ .word-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .word-line span {
+            margin: 0 10px;
+        }
+.message {
+  margin-top: 20px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 18px;
+  color: #333;
+}
+
+.row-indicator {
+  text-align: center;
+  font-size: 18px;
+  margin-top: 20px;
+  color: #333;
+}
+
+button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+button:hover {
+  background-color: #555;
+}
+#hintCountBadge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+button,
+#hintBtn,
+#deleteBtn,
+#guessBtn,
+#showRulesBtn,
+.key {
+    transition: all 0.2s ease-in-out;
+}
+
+button:hover,
+#hintBtn:hover,
+#deleteBtn:hover,
+#guessBtn:hover,
+#showRulesBtn:hover
+ {
+  font-weight: bold;
+  padding: 10px 24px;
+  transform: translate(-2px, -2px); /* Move buttons/keys 2 pixels left and up */
+}
+.key:hover{
+    font-weight: bold;
+    padding: 5px;
+    transform: translate(-2px,2px);
+}
+    </style>
+</head>
+<body>
+    <h1>Wordle Whiz</h1>
+    <button id="showRulesBtn">Game Rules</button>
+    <div id="hintCountBadge">2</div>
+<button id="hintBtn">Hint</button>
+    <div class="word-line" id="wordLine"></div>
+    <div class="rules-popup">
+        <div class="rules-popup-content">
+            <div class="rules-popup-heading">Game Rules</div>
+            <div class="rules-popup-text">
+                <p>The goal of the game is to guess the five-letter word of the day in five tries or less.</p>
+                <p>Each guess must be a valid five-letter word.</p>
+                <!-- <p>After each guess, the game will give you feedback on the letters in your guess.</p> -->
+                <p>Green letters are in the correct position.</p>
+                <p>Yellow letters are in the word, but in the wrong position.</p>
+                <p>Gray letters are not in the word.</p>
+                <!-- <p>You can use the feedback from the game to improve your guesses.</p> -->
+                <p>If you guess the word correctly, you win!</p>
+                <!-- <p>If you run out of guesses, you lose!</p> -->
+            </div>
+            <button class="rules-popup-close-btn">Close</button>
+        </div>
+    </div>
+    <!-- <div class="row-indicator">Row: 1</div> -->
+    <div class="word-boxes"></div>
+    <div class="keyboard"id="virtualKeyboard"></div>
+    <div class="popup">
+        <div class="popup-content">
+            <span class="popup-message"></span>
+            <button class="popup-close-btn">Close</button>
+        </div>
+        
+    </div>
+    <button id="guessBtn">Guess</button>
+    <button id="deleteBtn">Delete</button>
+
+    <script>
+         const words = ["apple","baker","candy","dance","eager","flame","grape","haste","ideal","jolly","koala","lemon","motel","noble","oasis","prize","quilt","rider","shout","toast","ultra","vocal","whale","xenon","young","zebra",
+"amber","brave","chime","doubt","elbow","fable","grace","house","input","juice","kiosk","liver","mango","niece","overt","pride","quest","razor","swift","table","uncle","video","white","xerox","yield","zesty",
+"ankle","blink","choir","dwarf","eagle","faint","grind","happy","image","jewel","knead","latch","melon","niece","ocean","peace","quiet","razor","shiny","truly","ulcer","vivid","wrist","xenon","yacht","zebra",
+"badge","brisk","chill","dance","elbow","frown","grace","house","ideal","jolly","koala","latch","melon","noble","oasis","peace","quiet","razor","shout","toast","uncle","vivid","whirl","xenon","young","zebra",
+"apple","beast","chime","dwarf","eager","flask","gloom","happy","ideal","jolly","koala","laser","melon","niece","oasis","prize","quiet","razor","swift","table","uncle","vocal","whale","xenon","young","zebra",
+"apple","beach","choir","dance","elbow","faint","grind","haste","ideal","jolly","koala","laser","melon","niece","oasis","prize","quiet","razor","shout","toast","uncle","vivid","whirl","xenon","yacht","zebra",
+"angel","blink","chime","dwarf","eagle","faint","grace","haste","ideal","jewel","koala","latch","melon","noble","oasis","peace","quiet","razor","swift","table","uncle","vocal","whale","xenon","youth","zebra",
+"apple","blink","choir","doubt","elbow","fable","grind","happy","ideal","jolly","koala","laser","melon","niece","oasis","prize","quest","razor","shiny","toast","uncle","vivid","whale","xenon","young","zebra","abide","baker","candy","dance","eager","froth","grape","haste","ideal","jolly","knead","lemon","motel","noble","oasis","prize","quest","razor","swift","table","uncle","vocal","whale","xenon","young","zebra",
+"ankle","blink","choir","dwarf","eagle","faint","grind","happy","ideal","jolly","koala","latch","melon","niece","oasis","peace","quiet","razor","shiny","toast","uncle","vivid","whale","xenon","young","zebra",
+"apple","beast","chime","dwarf","eager","flask","gloom","happy","ideal","jolly","koala","laser","melon","niece","oasis","prize","quiet","razor","swift","table","uncle","vocal","whale","xenon","young","zebra",
+"angel","blink","chime","dwarf","eagle","faint","grace","haste","ideal","jewel","koala","latch","melon","noble","oasis","peace","quiet","razor","swift","table","uncle","vocal","whale","xenon","youth","zebra",
+"apple","blink","choir","doubt","elbow","fable","grind","happy","ideal","jolly","koala","laser","melon","niece","oasis","prize","quest","razor","shiny","toast","uncle","vivid","whale","xenon","young","zebra",
+"amber","brisk","chill","dance","elbow","frown","grace","house","ideal","jolly","koala","latch","melon","noble","oasis","peace","quiet","razor","shout","toast","uncle","vivid","whirl","xenon","young","zebra",
+"apple","beach","choir","dance","elbow","faint","grind","haste","ideal","jolly","koala","laser","melon","niece","oasis","prize","quiet","razor","shout","toast","uncle","vivid","whirl","xenon","yacht","zebra",
+"badge","brisk","chime","dwarf","eager","flask","gloom","happy","ideal","jolly","koala","latch","melon","noble","oasis","peace","quiet","razor","shout","toast","uncle","vivid","whale","xenon","young","zebra",
+"abide","beach","choir","dance","elbow","faint","grind","haste","ideal","jolly","koala","laser","melon","niece","oasis","peace","quiet","razor","swift","toast","uncle","vivid","whale","xenon","young","zebra",
+"amber","beast","choir","dance","elbow","frown","grind","happy","ideal","jewel","koala","laser","melon","niece","oasis","peace","quiet","razor","swift","toast","uncle","vivid","whale","xenon","yacht","zebra"];
+        const maxAttempts = 5;
+        const boxesPerRow = 5;
+        let selectedWord = "";
+        let currentAttempt = 1;
+         let matchedLetters = [];
+        let currentRow = 1;
+        let currentBox = 0;
+        const lockedGuesses = [];
+         let hintUsed = false;
+        let guessedWords = Array(maxAttempts).fill().map(() => Array(boxesPerRow).fill(""));
+        function showPopup(message) {
+            const popup = document.createElement("div");
+            popup.classList.add("popup");
+            
+            const popupContent = document.createElement("div");
+            popupContent.classList.add("popup-content");
+            
+            const popupMessage = document.createElement("span");
+            popupMessage.classList.add("popup-message");
+            popupMessage.textContent = message;
+
+            const popupCloseBtn = document.createElement("button");
+            popupCloseBtn.classList.add("popup-close-btn");
+            popupCloseBtn.textContent = "Close";
+            popupCloseBtn.addEventListener("click", () => {
+                popup.style.display = "none";
+            });
+
+            popupContent.appendChild(popupMessage);
+            popupContent.appendChild(popupCloseBtn);
+            popup.appendChild(popupContent);
+
+            document.body.appendChild(popup);
+
+            popup.style.display = "block";
+        }
+let hintUsedCount = 0;
+const maxHints = 2; // Maximum number of hints allowed
+
+function showHint() {
+    if (hintUsedCount >= maxHints) {
+        showPopup("No hints left.");
+        return;
+    }
+
+    const wordBoxes = document.querySelectorAll(".word-box");
+    const letters = selectedWord.split("");
+
+    // Generate a random index to autofill one letter from the correct word
+    const randomIndex = Math.floor(Math.random() * letters.length);
+
+    // Check if the current row already has a letter at that position
+    if (!guessedWords[currentRow - 1][randomIndex]) {
+        guessedWords[currentRow - 1][randomIndex] = letters[randomIndex].toLowerCase();
+        updateWordBoxes();
+    }
+
+    hintUsedCount++;
+    updateHintCountDisplay();
+}
+function updateHintCountDisplay() {
+    const hintCountElement = document.getElementById("hintCountBadge");
+    const remainingHints = maxHints - hintUsedCount;
+    hintCountElement.textContent = remainingHints;
+
+    // Hide the "Hint" button when there are no hints left
+    const hintBtn = document.getElementById("hintBtn");
+    hintBtn.style.display = remainingHints === 0 ? "none" : "inline";
+}
+function resetHintCount() {
+    hintUsedCount = 0;
+}
+function resetHint() {
+    hintUsed = false;
+}
+document.getElementById("hintBtn").addEventListener("click", showHint);
+     document.getElementById("hintBtn").addEventListener("click", showHint); // Link hintBtn to showHint function
+        function initializeGame() {
+    const wordBoxesContainer = document.querySelector(".word-boxes");
+    wordBoxesContainer.innerHTML = "";
+            // showPopup("",true);
+    selectedWord = words[Math.floor(Math.random() * words.length)];
+
+    for (let i = 0; i < boxesPerRow * maxAttempts; i++) {
+        const wordBox = document.createElement("div");
+        wordBox.classList.add("word-box");
+        wordBoxesContainer.appendChild(wordBox);
+    }
+     const qwertyLayout = [
+                "qwertyuiop",
+                "asdfghjkl",
+                "zxcvbnm",
+            ];
+
+            const virtualKeyboard = document.getElementById("virtualKeyboard");
+            virtualKeyboard.innerHTML = "";
+
+            // Create the virtual keyboard keys
+            qwertyLayout.forEach((row) => {
+                const keyRow = document.createElement("div");
+                keyRow.classList.add("key-row");
+                virtualKeyboard.appendChild(keyRow);
+
+                row.split("").forEach((key) => {
+                    const keyBtn = document.createElement("div");
+                    keyBtn.classList.add("key");
+                    keyBtn.textContent = key;
+                    keyBtn.addEventListener("click", () => onVirtualKeyClick(key));
+                    keyRow.appendChild(keyBtn);
+                });
+            });
+
+    // Only reset the values inside the guessedWords array to empty strings
+    for (let i = 0; i < maxAttempts; i++) {
+        for (let j = 0; j < boxesPerRow; j++) {
+            guessedWords[i][j] = "";
+        }
+    }
+
+    currentAttempt = 1;
+    currentRow = 1;
+    document.getElementById("guessBtn").disabled = false;
+    document.getElementById("deleteBtn").disabled = false;
+    guessedWords = Array(maxAttempts).fill().map(() => Array(boxesPerRow).fill(""));
+    // showFeedbackMessage("Guess the five-letter word!");
+    updateWordBoxes();
+}
+
+        function onVirtualKeyClick(key) {
+    if (guessedWords[currentRow - 1].join("").length >= 5 || currentRow > maxAttempts) return;
+
+    guessedWords[currentRow - 1][currentBox] = key;
+    currentBox = (currentBox + 1) % boxesPerRow; // Move to the next box in the current row
+    updateWordBoxes();
+}
+
+function onDeleteClick() {
+    if (currentBox === 0) {
+        // If currentBox is 0, then move to the previous row (if available)
+        if (currentRow > 1) {
+            currentRow--;
+            currentBox = boxesPerRow - 1; // Move to the last box of the previous row
+            
+        }
+    } else {
+        currentBox--; // Move to the previous box in the current row
+    }
+
+    guessedWords[currentRow - 1][currentBox] = "";
+    updateWordBoxes();
+}
+
+function updateWordBoxes() {
+    const wordBoxes = document.querySelectorAll(".word-box");
+    const currentRowStart = (currentRow - 1) * boxesPerRow;
+
+    for (let i = 0; i < boxesPerRow; i++) {
+        const guessedLetter = guessedWords[currentRow - 1][i];
+        const box = wordBoxes[currentRowStart + i];
+
+        if (guessedLetter) {
+            box.textContent = guessedLetter.toUpperCase(); // Display the uppercase letter
+        } else {
+            box.textContent = "";
+        }
+
+        box.style.backgroundColor = "grey";
+    }
+}
+function gameOver(message) {
+            showPopup(message);
+            setTimeout(restartGame, 2500); // Restart the game after 2.5 seconds
+        }
+function onGuessClick() {
+        if (guessedWords[currentRow - 1].join("").length !== 5) {
+            showPopup("Your Guess Must Be A Valid Five-Letter Word!");
+            return;
+        }
+
+        const wordBoxes = document.querySelectorAll(".word-box");
+        const letters = selectedWord.split("");
+
+        const letterCounts = {}; // Track the count of each letter in the selected word
+        for (const letter of selectedWord) {
+            letterCounts[letter] = (letterCounts[letter] || 0) + 1;
+        }
+
+        let correctIndexes = [];
+        let yellowIndexes = [];
+
+        for (let j = 0; j < 5; j++) {
+            const guessedLetter = guessedWords[currentRow - 1][j];
+            const correctLetter = letters[j];
+            const box = wordBoxes[j + (currentRow - 1) * boxesPerRow];
+
+            if (guessedLetter === correctLetter) {
+                if (letterCounts[guessedLetter] > 0) {
+                    box.style.backgroundColor = "green";
+                    letterCounts[guessedLetter]--;
+                    correctIndexes.push(j);
+                } else {
+                    box.style.backgroundColor = "black"; // Set text color to black for wrong letters
+      box.style.color = "#fff";
+                }
+            } else if (letters.includes(guessedLetter)) {
+                if (letterCounts[guessedLetter] > 0) {
+                    box.style.backgroundColor = "yellow";
+                    letterCounts[guessedLetter]--;
+                    yellowIndexes.push(j);
+                } else {
+                    box.style.backgroundColor = "black"; // Set text color to black for wrong letters
+      box.style.color = "#fff";
+                }
+            } else {
+                box.style.backgroundColor = "black"; // Set text color to black for wrong letters
+      box.style.color = "#fff";
+            }
+        }
+
+        if (guessedWords[currentRow - 1].join("") === selectedWord) {
+            gameOver("You Won! Refresh to Restart!!!");
+            document.getElementById("guessBtn").disabled = true;
+            document.getElementById("deleteBtn").disabled = true;
+            setTimeout(restartGame, 2500); // Restart the game after 2.5 seconds
+        } else {
+            currentBox = 0;
+            currentAttempt++;
+            if (currentAttempt > maxAttempts) {
+                gameOver(`You Lost! The correct word was "${selectedWord}". Refresh to Restart!`);
+                document.getElementById("guessBtn").disabled = true;
+                document.getElementById("deleteBtn").disabled = true;
+                setTimeout(restartGame, 2500); // Restart the game after 2.5 seconds
+            } 
+        }
+
+        currentRow++;
+        if (currentRow > maxAttempts) {
+            document.getElementById("guessBtn").disabled = true;
+            document.getElementById("deleteBtn").disabled = true;
+        } else {
+            guessedWords[currentRow - 1] = Array(boxesPerRow).fill("");
+            updateWordBoxes();
+        }
+    }
+document.getElementById("showRulesBtn").addEventListener("click", showRulesPopup);
+
+        // Function to show the game rules popup
+        function showRulesPopup() {
+            const rulesPopup = document.querySelector(".rules-popup");
+            rulesPopup.style.display = "block";
+
+            // Add event listener to close the game rules popup
+            const rulesPopupCloseBtn = document.querySelector(".rules-popup-close-btn");
+            rulesPopupCloseBtn.addEventListener("click", closeRulesPopup);
+        }
+
+        // Function to close the game rules popup
+        function closeRulesPopup() {
+            const rulesPopup = document.querySelector(".rules-popup");
+            rulesPopup.style.display = "none";
+        }
+// Function to restart the game
+function restartGame() {
+    // Reset the game state variables
+    selectedWord = words[Math.floor(Math.random() * words.length)];
+    guessedWord = "";
+    currentAttempt = 1;
+    currentRow = 1;
+    lockedGuesses.length = 0; // Clear the locked guesses array
+
+    // Reset word boxes and row indicator
+    updateWordBoxes();
+    const rowIndicator = document.querySelector(".row-indicator");
+    rowIndicator.textContent = `Row: ${currentRow}`;
+
+    // Enable the guess and delete buttons
+    document.getElementById("guessBtn").disabled = false;
+    document.getElementById("deleteBtn").disabled = false;
+     resetHintCount();
+     resetHint();
+      updateHintCountDisplay();
+    // Show initial feedback message
+    // showFeedbackMessage("Guess the five-letter word!");
+}
+
+
+
+        function showFeedbackMessage(message) {
+            const messageContainer = document.createElement("div");
+            messageContainer.classList.add("message");
+            messageContainer.textContent = message;
+            document.querySelector(".word-boxes").appendChild(messageContainer);
+
+            // Remove the message after a short delay (2000ms)
+            setTimeout(() => {
+                messageContainer.remove();
+            }, 2000);
+        }
+
+        document.getElementById("guessBtn").addEventListener("click", onGuessClick);
+        document.getElementById("deleteBtn").addEventListener("click", onDeleteClick);
+
+        // Initialize the game when the page loads
+        initializeGame();
+    </script>
+</body>
+</html>
